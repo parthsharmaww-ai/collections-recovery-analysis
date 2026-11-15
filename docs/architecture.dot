@@ -1,0 +1,57 @@
+digraph collections_analytics {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=12, bgcolor="#fcfcfb", pad=0.3, nodesep=0.28, ranksep=0.45, compound=true,
+         label="Collections analytics: production architecture  (daily batch, 02:00 IST; dashboard SLA 08:00 IST)", labelloc=t, labeljust=l];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10.5, color="#c9c8c2", fillcolor="#ffffff", penwidth=1.1, margin="0.14,0.07"];
+  edge  [color="#7a7972", arrowsize=0.7, penwidth=1.1, fontname="Helvetica", fontsize=9, fontcolor="#52514e"];
+
+  subgraph cluster_src {
+    label="Source systems (17 feeds)"; style="rounded,filled"; fillcolor="#f4f3ef"; color="#e3e2dc"; fontsize=11;
+    lms   [label="Loan mgmt / LMS\naccounts, borrowers,\nstatus history"];
+    dial  [label="Dialler + 6 telephony\nvendors\ncalls, attempts, dispositions"];
+    dig   [label="WhatsApp / SMS\nproviders\nevents"];
+    fld   [label="Field app\nvisits, PTPs"];
+    pay   [label="Payment gateway\npayments"];
+    hr    [label="HRMS / workforce\nagents, sessions"];
+    crm   [label="Campaign engine + CRM\ncampaigns, targeting,\ncomplaints"];
+  }
+
+  ingest [label="Ingestion\nCDC / daily extracts\nadds ingested_at, batch_id", fillcolor="#eef4fc", color="#86b6ef"];
+  contract [label="Contract gate\ncontracts/sources.yml\nschema · keys · enums · types", shape=box, style="rounded,filled,dashed", fillcolor="#fdf3e1", color="#eda100"];
+
+  subgraph cluster_lake {
+    label="Warehouse / lakehouse  (SQL models in sql/, one model per layer)"; style="rounded,filled"; fillcolor="#f4f3ef"; color="#e3e2dc"; fontsize=11;
+    raw   [label="RAW\nimmutable, all text\npartition: load_date\n00_raw.sql", fillcolor="#ffffff"];
+    stg   [label="STAGING\ntyped · IST clock · flags\nno rows dropped\n01_staging.sql"];
+    cln   [label="CLEAN\ndedup · entity resolution\ncode maps (R-xx)\n02_clean.sql"];
+    gold  [label="GOLDEN\nstar schema + account-month\nSCD2 dims · fixed panel (G-1)\n03_golden.sql", fillcolor="#eef4fc", color="#2a78d6", penwidth=1.6];
+    feat  [label="FEATURE\npoint-in-time, no leakage\n09_features.sql"];
+    met   [label="METRICS\nversioned KPI layer\nmetrics/metrics.yml\n06_metrics.sql"];
+    raw -> stg -> cln -> gold -> feat;
+    gold -> met;
+    feat -> met [style=dashed, label="model\nscores"];
+  }
+
+  dq [label="DQ assertions\n10_dq_assertions.sql\nPK · RI · reconciliation\nCRITICAL = block publish", style="rounded,filled,dashed", fillcolor="#fdf3e1", color="#eda100"];
+  anom [label="Anomaly detection\nrobust z vs 28-day median\npersistence rule · CUSUM", style="rounded,filled,dashed", fillcolor="#fdf3e1", color="#eda100"];
+
+  subgraph cluster_out {
+    label="Consumers"; style="rounded,filled"; fillcolor="#f4f3ef"; color="#e3e2dc"; fontsize=11;
+    dash [label="Executive dashboard\none screen · 60 seconds\nprovisional-month banner", fillcolor="#eef4fc", color="#2a78d6", penwidth=1.6];
+    exp  [label="Experiment readouts\nassignment table · holdout\nPhase-1 digital test"];
+    ops  [label="Ops / analyst marts\nnotebook, ad-hoc SQL"];
+  }
+
+  orch [label="Orchestrator (Airflow / Dagster)\ndaily run · 7-day late-data window\nparameterised backfills · retries", shape=box, fillcolor="#ffffff", color="#52514e"];
+  mon  [label="Monitoring + alerting\nfreshness · volume · DQ pass-rate\nrun time · KPI drift → Slack / on-call", fillcolor="#ffffff", color="#52514e"];
+  lin  [label="Lineage + catalog\n_raw_row → golden ids\nmeta_pipeline_runs (git sha, extract)\nOpenLineage", fillcolor="#ffffff", color="#52514e"];
+
+  {lms dial dig fld pay hr crm} -> ingest;
+  ingest -> contract -> raw;
+  met -> dash; met -> exp; gold -> ops; feat -> exp;
+  cln -> dq [style=dashed, arrowhead=none]; gold -> dq [style=dashed, arrowhead=none]; met -> dq [style=dashed, arrowhead=none];
+  dq -> dash [style=dashed, label="pass / stale"];
+  met -> anom [style=dashed, arrowhead=none];
+  anom -> mon [style=dashed]; dq -> mon [style=dashed]; contract -> mon [style=dashed];
+  orch -> raw [style=dotted, lhead=cluster_lake, label="schedules"];
+  gold -> lin [style=dotted, arrowhead=none];
+}

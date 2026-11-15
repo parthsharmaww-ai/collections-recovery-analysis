@@ -1,0 +1,25 @@
+issue_id,table_name,check_name,rows_affected
+DQ-01,payments,Duplicate payment_id rows,500
+DQ-02,payments,payment_reference reused by different payments,7218
+DQ-03,payments,Missing payment_reference,368
+DQ-04,all events,Event borrower_id ≠ accounts.borrower_id (payments),25113
+DQ-05,calls,Duplicate call_id rows,1350
+DQ-06,calls,Late-arriving copies (timestamp shifted 1–5 days),11
+DQ-07,calls,Missing agent_id after dedup,1759
+DQ-08,calls,Non-answered calls with duration > 0,72035
+DQ-09,calls,Calls whose calendar date changes after IST conversion,8791
+DQ-10,calls,Calls outside 08:00–19:00 IST,48803
+DQ-11,attempts/dispositions,call_id points to a call on a different account,154992
+DQ-12,dispositions,Two code sets for the same outcome (PTP / PROMISE_TO_PAY),3926
+DQ-13,promises_to_pay,Reported KEPT with no payment in window,4273
+DQ-14,agents,Rows per agent_id > 1 (identity fragments),29000
+DQ-15,agents,Employee codes mapped to >1 agent_id,1099
+DQ-16,borrowers,Version rows collapsed,19585
+DQ-17,borrowers,updated_at earlier than created_at,15354
+DQ-18,accounts,borrower_id present but not in borrowers table,2458
+DQ-19,accounts,No status history at all,4001
+DQ-20,status_history,recorded_at before event_at (clock skew),30191
+DQ-21,campaigns,Campaign names used on more than one channel,5
+DQ-22,vendors,vendor_ids per real vendor > 1,10
+DQ-23,accounts,Missing borrower_id on account (geography unknowable),455
+DQ-24,calls,Calls before 2026-01-01 or after data cut-off,5

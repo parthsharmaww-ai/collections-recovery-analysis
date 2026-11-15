@@ -1,0 +1,8 @@
+step,stage,amount
+1,"Raw payments file, all statuses",1917258617.15
+2,Less FAILED / PENDING / REVERSED (raw),-575772690.82
+3,= Reported basis: raw SUCCESS incl. duplicates,1341485926.33
+4,Less duplicate SUCCESS rows (R-P1),-25901961.69
+5,= Golden recovered (all dates),1315583964.64
+6,Less partial month Aug 1–8 (G-2),-47109695.31
+7,"= Golden recovered, Jan–Jul window",1268474269.33

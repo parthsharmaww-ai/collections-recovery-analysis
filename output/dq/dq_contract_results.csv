@@ -1,0 +1,138 @@
+table_name,rule,severity,violations,note,status
+accounts,schema: required columns present,CRITICAL,0,-,PASS
+accounts,schema: no unexpected columns,WARN,0,-,PASS
+accounts,primary key unique (account_id),WARN,0,duplicates are removed in 02_clean,PASS
+accounts,primary key not null,CRITICAL,0,-,PASS
+accounts,allowed values: loan_type,WARN,0,new codes need a mapping before use,PASS
+accounts,allowed values: risk_segment,WARN,0,new codes need a mapping before use,PASS
+accounts,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+accounts,type timestamp: opened_at,CRITICAL,0,-,PASS
+accounts,allowed values: timezone,WARN,0,new codes need a mapping before use,PASS
+accounts,allowed values: schema_version,WARN,0,new codes need a mapping before use,PASS
+borrowers,schema: required columns present,CRITICAL,0,-,PASS
+borrowers,schema: no unexpected columns,WARN,0,-,PASS
+borrowers,primary key unique (borrower_id+updated_at),WARN,600,duplicates are removed in 02_clean,FAIL
+borrowers,primary key not null,CRITICAL,0,-,PASS
+borrowers,allowed values: name,WARN,0,new codes need a mapping before use,PASS
+borrowers,allowed values: city,WARN,0,new codes need a mapping before use,PASS
+borrowers,type timestamp: created_at,CRITICAL,0,-,PASS
+borrowers,type timestamp: updated_at,CRITICAL,0,-,PASS
+borrowers,allowed values: state,WARN,0,new codes need a mapping before use,PASS
+agents,schema: required columns present,CRITICAL,0,-,PASS
+agents,schema: no unexpected columns,WARN,0,-,PASS
+agents,primary key unique (agent_id+updated_at),WARN,0,duplicates are removed in 02_clean,PASS
+agents,primary key not null,CRITICAL,0,-,PASS
+agents,allowed values: agent_name,WARN,0,new codes need a mapping before use,PASS
+agents,allowed values: team,WARN,0,new codes need a mapping before use,PASS
+agents,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+agents,type timestamp: joined_at,CRITICAL,0,-,PASS
+agents,type timestamp: updated_at,CRITICAL,0,-,PASS
+agent_sessions,schema: required columns present,CRITICAL,0,-,PASS
+agent_sessions,schema: no unexpected columns,WARN,0,-,PASS
+agent_sessions,primary key unique (session_id),WARN,0,duplicates are removed in 02_clean,PASS
+agent_sessions,primary key not null,CRITICAL,0,-,PASS
+agent_sessions,type timestamp: login_at,CRITICAL,0,-,PASS
+agent_sessions,allowed values: channel,WARN,0,new codes need a mapping before use,PASS
+agent_sessions,allowed values: timezone,WARN,0,new codes need a mapping before use,PASS
+agent_sessions,type timestamp: logout_at,CRITICAL,0,-,PASS
+campaigns,schema: required columns present,CRITICAL,0,-,PASS
+campaigns,schema: no unexpected columns,WARN,0,-,PASS
+campaigns,primary key unique (campaign_id),WARN,0,duplicates are removed in 02_clean,PASS
+campaigns,primary key not null,CRITICAL,0,-,PASS
+campaigns,allowed values: campaign_name,WARN,0,new codes need a mapping before use,PASS
+campaigns,allowed values: channel,WARN,0,new codes need a mapping before use,PASS
+campaigns,allowed values: strategy_version,WARN,0,new codes need a mapping before use,PASS
+campaigns,type timestamp: start_at,CRITICAL,0,-,PASS
+campaigns,allowed values: target_definition,WARN,0,new codes need a mapping before use,PASS
+campaigns,type timestamp: end_at,CRITICAL,0,-,PASS
+daily_targeting,schema: required columns present,CRITICAL,0,-,PASS
+daily_targeting,schema: no unexpected columns,WARN,0,-,PASS
+daily_targeting,primary key unique (target_id),WARN,0,duplicates are removed in 02_clean,PASS
+daily_targeting,primary key not null,CRITICAL,0,-,PASS
+daily_targeting,type timestamp: target_date,CRITICAL,0,-,PASS
+daily_targeting,allowed values: recommended_channel,WARN,0,new codes need a mapping before use,PASS
+daily_targeting,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+calls,schema: required columns present,CRITICAL,0,-,PASS
+calls,schema: no unexpected columns,WARN,0,-,PASS
+calls,primary key unique (call_id),WARN,1350,duplicates are removed in 02_clean,FAIL
+calls,primary key not null,CRITICAL,0,-,PASS
+calls,type timestamp: event_at,CRITICAL,0,-,PASS
+calls,allowed values: direction,WARN,0,new codes need a mapping before use,PASS
+calls,allowed values: call_status,WARN,0,new codes need a mapping before use,PASS
+calls,allowed values: timezone,WARN,0,new codes need a mapping before use,PASS
+call_attempts,schema: required columns present,CRITICAL,0,-,PASS
+call_attempts,schema: no unexpected columns,WARN,0,-,PASS
+call_attempts,primary key unique (attempt_id),WARN,0,duplicates are removed in 02_clean,PASS
+call_attempts,primary key not null,CRITICAL,0,-,PASS
+call_attempts,type timestamp: event_at,CRITICAL,0,-,PASS
+call_attempts,allowed values: attempt_status,WARN,0,new codes need a mapping before use,PASS
+call_dispositions,schema: required columns present,CRITICAL,0,-,PASS
+call_dispositions,schema: no unexpected columns,WARN,0,-,PASS
+call_dispositions,primary key unique (disposition_id),WARN,0,duplicates are removed in 02_clean,PASS
+call_dispositions,primary key not null,CRITICAL,0,-,PASS
+call_dispositions,type timestamp: event_at,CRITICAL,0,-,PASS
+call_dispositions,allowed values: disposition_code,WARN,0,new codes need a mapping before use,PASS
+call_dispositions,allowed values: disposition_version,WARN,0,new codes need a mapping before use,PASS
+whatsapp_events,schema: required columns present,CRITICAL,0,-,PASS
+whatsapp_events,schema: no unexpected columns,WARN,0,-,PASS
+whatsapp_events,primary key unique (whatsapp_event_id),WARN,600,duplicates are removed in 02_clean,FAIL
+whatsapp_events,primary key not null,CRITICAL,0,-,PASS
+whatsapp_events,type timestamp: event_at,CRITICAL,0,-,PASS
+whatsapp_events,allowed values: event_type,WARN,0,new codes need a mapping before use,PASS
+whatsapp_events,allowed values: template_code,WARN,0,new codes need a mapping before use,PASS
+sms_events,schema: required columns present,CRITICAL,0,-,PASS
+sms_events,schema: no unexpected columns,WARN,0,-,PASS
+sms_events,primary key unique (sms_event_id),WARN,0,duplicates are removed in 02_clean,PASS
+sms_events,primary key not null,CRITICAL,0,-,PASS
+sms_events,type timestamp: event_at,CRITICAL,0,-,PASS
+sms_events,allowed values: event_type,WARN,0,new codes need a mapping before use,PASS
+sms_events,allowed values: template_code,WARN,0,new codes need a mapping before use,PASS
+field_visits,schema: required columns present,CRITICAL,0,-,PASS
+field_visits,schema: no unexpected columns,WARN,0,-,PASS
+field_visits,primary key unique (visit_id),WARN,0,duplicates are removed in 02_clean,PASS
+field_visits,primary key not null,CRITICAL,0,-,PASS
+field_visits,type timestamp: event_at,CRITICAL,0,-,PASS
+field_visits,allowed values: visit_type,WARN,0,new codes need a mapping before use,PASS
+field_visits,allowed values: outcome,WARN,0,new codes need a mapping before use,PASS
+field_visits,type timestamp: scheduled_at,CRITICAL,0,-,PASS
+promises_to_pay,schema: required columns present,CRITICAL,0,-,PASS
+promises_to_pay,schema: no unexpected columns,WARN,0,-,PASS
+promises_to_pay,primary key unique (ptp_id),WARN,0,duplicates are removed in 02_clean,PASS
+promises_to_pay,primary key not null,CRITICAL,0,-,PASS
+promises_to_pay,type timestamp: event_at,CRITICAL,0,-,PASS
+promises_to_pay,type timestamp: promised_date,CRITICAL,0,-,PASS
+promises_to_pay,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+promises_to_pay,allowed values: source,WARN,0,new codes need a mapping before use,PASS
+payments,schema: required columns present,CRITICAL,0,-,PASS
+payments,schema: no unexpected columns,WARN,0,-,PASS
+payments,primary key unique (payment_id),WARN,500,duplicates are removed in 02_clean,FAIL
+payments,primary key not null,CRITICAL,0,-,PASS
+payments,type timestamp: event_at,CRITICAL,0,-,PASS
+payments,allowed values: payment_status,WARN,0,new codes need a mapping before use,PASS
+payments,allowed values: payment_method,WARN,0,new codes need a mapping before use,PASS
+vendor_telephony,schema: required columns present,CRITICAL,0,-,PASS
+vendor_telephony,schema: no unexpected columns,WARN,0,-,PASS
+vendor_telephony,primary key unique (vendor_id),WARN,0,duplicates are removed in 02_clean,PASS
+vendor_telephony,primary key not null,CRITICAL,0,-,PASS
+vendor_telephony,allowed values: vendor_name,WARN,0,new codes need a mapping before use,PASS
+vendor_telephony,allowed values: timezone,WARN,0,new codes need a mapping before use,PASS
+vendor_telephony,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+vendor_telephony,allowed values: schema_version,WARN,0,new codes need a mapping before use,PASS
+complaints,schema: required columns present,CRITICAL,0,-,PASS
+complaints,schema: no unexpected columns,WARN,0,-,PASS
+complaints,primary key unique (complaint_id),WARN,0,duplicates are removed in 02_clean,PASS
+complaints,primary key not null,CRITICAL,0,-,PASS
+complaints,type timestamp: event_at,CRITICAL,0,-,PASS
+complaints,allowed values: complaint_type,WARN,0,new codes need a mapping before use,PASS
+complaints,allowed values: severity,WARN,0,new codes need a mapping before use,PASS
+complaints,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+complaints,allowed values: source,WARN,0,new codes need a mapping before use,PASS
+complaints,type timestamp: resolution_at,CRITICAL,0,-,PASS
+account_status_history,schema: required columns present,CRITICAL,0,-,PASS
+account_status_history,schema: no unexpected columns,WARN,0,-,PASS
+account_status_history,primary key unique (history_id),WARN,0,duplicates are removed in 02_clean,PASS
+account_status_history,primary key not null,CRITICAL,0,-,PASS
+account_status_history,type timestamp: event_at,CRITICAL,0,-,PASS
+account_status_history,allowed values: status,WARN,0,new codes need a mapping before use,PASS
+account_status_history,allowed values: source,WARN,0,new codes need a mapping before use,PASS
+account_status_history,type timestamp: recorded_at,CRITICAL,0,-,PASS

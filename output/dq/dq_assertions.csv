@@ -1,0 +1,23 @@
+check_id,layer,table_name,check_name,severity,observed,expectation,status
+NN-01,golden,fct_payment,account_id / event_at / amount not null,CRITICAL,0.0,= 0.0,PASS
+NN-02,staging,stg_calls,timestamp parse / TZ conversion failures,CRITICAL,0.0,= 0.0,PASS
+NN-03,golden,fct_payment,non-positive SUCCESS amounts,CRITICAL,0.0,= 0.0,PASS
+PK-01,golden,fct_payment,payment_id unique,CRITICAL,0.0,= 0.0,PASS
+PK-02,golden,fct_call,call_id unique,CRITICAL,0.0,= 0.0,PASS
+PK-03,golden,dim_account,account_id unique,CRITICAL,0.0,= 0.0,PASS
+PK-04,golden,dim_agent,agent_id unique,CRITICAL,0.0,= 0.0,PASS
+PK-05,golden,golden_account_month,"(account_id, month) unique",CRITICAL,0.0,= 0.0,PASS
+PK-06,feature,feat_account_month,"(account_id, month) unique",CRITICAL,0.0,= 0.0,PASS
+RC-01,golden,golden_account_month,panel rows = accounts x full months,CRITICAL,0.0,= 0.0,PASS
+RC-02,golden,golden_account_month,"panel ₹ = fact ₹ (abs diff, ₹)",CRITICAL,0.0,< 1.0,PASS
+RC-03,metrics,mt_monthly_metrics,one metrics row per full month,CRITICAL,0.0,= 0.0,PASS
+RI-01,golden,fct_payment,account_id exists in dim_account,CRITICAL,0.0,= 0.0,PASS
+RI-02,golden,fct_call,account_id exists in dim_account,CRITICAL,0.0,= 0.0,PASS
+CP-01,golden,fct_call,calls outside 08:00–19:00 IST (share),WARN,0.5423,< 0.01,FAIL
+FR-01,golden,fct_payment,days between data cut-off and latest payment,WARN,0.0,<= 1.0,PASS
+RI-03,golden,fct_call,vendor_id exists in dim_vendor,WARN,0.0,= 0.0,PASS
+UP-01,raw,raw_payments,duplicate payment_id share,WARN,0.0196,< 0.03,PASS
+UP-02,raw,raw_calls,duplicate call_id share,WARN,0.0148,< 0.03,PASS
+UP-03,raw,events,event borrower_id ≠ account borrower (payments share),WARN,1.0,< 0.05,FAIL
+UP-04,raw,promises_to_pay,reported KEPT without payment (share of KEPT),WARN,0.9519,< 0.2,FAIL
+UP-05,raw,agents,employee codes per agent_id (avg),WARN,29.604,< 1.5,FAIL

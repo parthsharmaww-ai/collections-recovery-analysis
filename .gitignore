@@ -1,0 +1,12 @@
+# raw source extract is not redistributed: place the 17 CSVs in data/raw/
+data/raw/
+# rebuildable working database
+output/collections.duckdb
+output/collections.duckdb.wal
+# large intermediate panels (rebuilt by the pipeline in seconds)
+output/analysis/cf_panel.csv
+output/analysis/cf_account_covariates.csv
+output/analysis/mt_account_reach.csv
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store

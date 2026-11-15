@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collections recovery: executive dashboard</title>
+<style>
+:root { --surface-0:#f4f3ef; --surface-1:#fcfcfb; --border:#e3e2dc; --grid:#ecebe7; --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#7a7972;
+        --series-1:#2a78d6; --series-2:#eb6834; --muted:#c9c8c2; --critical:#d03b3b; --good-text:#006300; --warn-bg:#fdf3e1; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark; --surface-0:#121211; --surface-1:#1a1a19; --border:#33332f; --grid:#2a2a27;
+        --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8f8e86; --series-1:#3987e5; --series-2:#d95926; --muted:#4a4a45;
+        --critical:#e66767; --good-text:#0ca30c; --warn-bg:#2b2416; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--surface-0); color:var(--text-primary); font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+.wrap { max-width:1280px; margin:0 auto; padding:12px 20px 8px; }
+header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+h1 { font-size:18px; margin:0; font-weight:650; } .asof { color:var(--text-secondary); font-size:12.5px; }
+.grid2 { display:grid; grid-template-columns:1.25fr 1fr; gap:12px; }
+.card { background:var(--surface-1); border:1px solid var(--border); border-radius:10px; padding:12px 16px; }
+.verdict h2 { font-size:25px; line-height:1.15; margin:2px 0 8px; font-weight:700; letter-spacing:-0.01em; }
+.verdict p { margin:4px 0; color:var(--text-secondary); }
+.eyebrow { font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); font-weight:600; }
+.decision { border-left:4px solid var(--series-1); }
+.decision h2 { font-size:19px; margin:2px 0 8px; font-weight:700; }
+.impact { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+.impact div { background:var(--surface-0); border-radius:8px; padding:8px 10px; }
+.impact b { display:block; font-size:16px; white-space:nowrap; } .impact span { font-size:12px; color:var(--text-secondary); }
+.kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:10px 0; }
+.kpi .v { font-size:26px; font-weight:700; letter-spacing:-0.01em; } .kpi .v small { font-size:14px; font-weight:600; color:var(--text-secondary); }
+.kpi .d { font-size:12.5px; color:var(--text-secondary); margin-top:2px; }
+.flag { display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:650; color:var(--critical); }
+.flag::before { content:"!"; display:inline-grid; place-items:center; width:14px; height:14px; border-radius:50%; background:var(--critical); color:var(--surface-1); font-size:10px; }
+.ok { color:var(--good-text); font-size:11.5px; font-weight:650; }
+.chart h3 { font-size:14.5px; margin:0 0 2px; } .chart .sub { color:var(--text-secondary); font-size:12.5px; margin-bottom:6px; }
+.legend { display:flex; gap:14px; font-size:12px; color:var(--text-secondary); margin-bottom:2px; }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
+svg { width:100%; height:auto; display:block; overflow:visible; }
+.grid { stroke:var(--grid); stroke-width:1; } .axis { stroke:var(--text-muted); stroke-width:1; }
+.ref { stroke:var(--text-secondary); stroke-width:1; stroke-dasharray:3 3; }
+.tick { fill:var(--text-muted); font-size:11px; } .lab { fill:var(--text-secondary); font-size:12.5px; } .lab.strong { fill:var(--text-primary); font-weight:650; }
+.val { fill:var(--text-primary); font-size:12px; font-weight:600; }
+.s1 { fill:var(--series-1); } .s2 { fill:var(--series-2); } .muted { fill:var(--muted); }
+.mark { cursor:default; transition:opacity .12s; } svg:hover .mark { opacity:.55; } svg .mark:hover { opacity:1; }
+.fixes { margin-top:10px; display:grid; grid-template-columns:auto 1fr 1fr 1fr; gap:12px; align-items:stretch; }
+.fixes .card { padding:10px 14px; font-size:12.5px; color:var(--text-secondary); } .fixes b { color:var(--text-primary); }
+.fixes .head { background:var(--warn-bg); display:flex; align-items:center; font-weight:650; color:var(--text-primary); font-size:13px; }
+details { margin-top:6px; font-size:12px; color:var(--text-secondary); } summary { cursor:pointer; }
+table { border-collapse:collapse; width:100%; margin-top:6px; font-size:12px; } th,td { text-align:left; padding:3px 6px; border-bottom:1px solid var(--border); }
+th { color:var(--text-muted); font-weight:600; }
+footer { margin-top:10px; font-size:11.5px; color:var(--text-muted); }
+#tip { position:fixed; pointer-events:none; background:var(--text-primary); color:var(--surface-1); font-size:12px; padding:6px 8px; border-radius:6px; max-width:320px; opacity:0; transition:opacity .08s; z-index:10; }
+</style></head>
+<body><div class="wrap">
+<header><h1>Collections recovery · Is the "+11% month-on-month" real?</h1>
+<span class="asof">Data to 2026-08-08 · analysis window Jan–Jul 2026 · 30,000 accounts · rebuilt from 17 raw tables</span></header>
+
+<div class="grid2">
+  <div class="card verdict">
+    <div class="eyebrow">What happened</div>
+    <h2>The +11% isn't real. Recovery has been flat all year.</h2>
+    <p>The only +11% month is Feb→Mar (+11.0%): March simply has 31 days vs February's 28. <b>Per day, Feb→Mar was +0.3%</b> (95% CI -6% to +7%).</p>
+    <p>Jan–Jul trend: <b>-0.35% per month</b>, not significant (CI -1.1% to +0.3%). No segment, cohort, channel or campaign improved.</p>
+  </div>
+  <div class="card decision">
+    <div class="eyebrow">Decision needed · ₹10 Cr</div>
+    <h2>Approve ₹0.75 Cr for a WhatsApp/digital test now. Hold ₹9.25 Cr for a month-6 gate.</h2>
+    <p style="margin:0;color:var(--text-secondary)">Release the rest only if a randomised 50/50 test shows at least +0.20 pp lift in monthly payment rate. <b>Confidence: low.</b> No option is proven by today's data.</p>
+    <div class="impact">
+      <div><b>+₹13 Cr</b><span>base case, 24 months (ROI +30%)</span></div>
+      <div><b>Month 18</b><span>break-even (base case)</span></div>
+      <div><b>−₹0.8 to −₹1.7 Cr</b><span>worst case with the gate (vs −₹17 Cr without)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="card kpi"><div class="eyebrow">Cash recovered</div><div class="v">₹60 L<small> /day</small></div>
+    <div class="d">≈ ₹217 Cr a year · flat Jan–Jul</div></div>
+  <div class="card kpi"><div class="eyebrow">Recovery rate (fixed book)</div><div class="v">1.7%<small> /30 days</small></div>
+    <div class="d">Current report shows 1.8% → 2.7% only because closed accounts leave the base while their cash stays in</div></div>
+  <div class="card kpi"><div class="eyebrow">Promises actually kept</div><div class="v">4.5%</div>
+    <div class="d"><span class="flag">Reported 50%</span> · checked against real payments</div></div>
+  <div class="card kpi"><div class="eyebrow">Calls outside 08:00–19:00 IST</div><div class="v">54%</div>
+    <div class="d"><span class="flag">Compliance review</span> · conduct risk or bad timestamps; either needs an owner</div></div>
+</div>
+
+<div class="grid2">
+  <div class="card chart">
+    <h3>What was reported vs what happened</h3>
+    <div class="sub">Month-on-month change in recovered cash</div>
+    <div class="legend"><span><i style="background:var(--muted)"></i>Reported (monthly total)</span><span><i style="background:var(--series-1)"></i>Actual (per day, calendar-adjusted)</span></div>
+    <svg viewBox="0 0 560 178" role="img" aria-label="Month-on-month change: reported total versus per-day recovery"><line x1="44" x2="548" y1="154.0" y2="154.0" class="grid"/><text x="38" y="157.5" class="tick" text-anchor="end">-10%</text><line x1="44" x2="548" y1="121.7" y2="121.7" class="grid"/><text x="38" y="125.2" class="tick" text-anchor="end">-5%</text><line x1="44" x2="548" y1="89.5" y2="89.5" class="grid"/><text x="38" y="93.0" class="tick" text-anchor="end">+0%</text><line x1="44" x2="548" y1="57.2" y2="57.2" class="grid"/><text x="38" y="60.7" class="tick" text-anchor="end">+5%</text><line x1="44" x2="548" y1="24.9" y2="24.9" class="grid"/><text x="38" y="28.4" class="tick" text-anchor="end">+10%</text><line x1="44" x2="548" y1="89.5" y2="89.5" class="axis"/><line x1="44" x2="548" y1="18.5" y2="18.5" class="ref"/><text x="548" y="14.5" class="tick" text-anchor="end">claimed +11%</text><path d="M58.1,89.5 V142.9 Q58.1,146.9 62.1,146.9 H81.0 Q85.0,146.9 85.0,142.9 V89.5 Z" class="muted mark" data-tip="Jan→Feb · Reported (monthly total): -8.9%"/><path d="M87.0,89.5 V89.5 Q87.0,85.6 90.9,85.6 H110.0 Q113.9,85.6 113.9,89.5 V89.5 Z" class="s1 mark" data-tip="Jan→Feb · Actual (per day): +0.6%"/><text x="86.0" y="170" class="tick" text-anchor="middle">Jan→Feb</text><path d="M142.1,89.5 V22.5 Q142.1,18.5 146.1,18.5 H165.0 Q169.0,18.5 169.0,22.5 V89.5 Z" class="muted mark" data-tip="Feb→Mar · Reported (monthly total): +11.0%"/><path d="M171.0,89.5 V89.5 Q171.0,87.5 172.9,87.5 H195.9 Q197.9,87.5 197.9,89.5 V89.5 Z" class="s1 mark" data-tip="Feb→Mar · Actual (per day): +0.3%"/><text x="170.0" y="170" class="tick" text-anchor="middle">Feb→Mar</text><path d="M226.1,89.5 V135.2 Q226.1,139.2 230.1,139.2 H249.0 Q253.0,139.2 253.0,135.2 V89.5 Z" class="muted mark" data-tip="Mar→Apr · Reported (monthly total): -7.7%"/><path d="M255.0,89.5 V112.6 Q255.0,116.6 259.0,116.6 H277.9 Q281.9,116.6 281.9,112.6 V89.5 Z" class="s1 mark" data-tip="Mar→Apr · Actual (per day): -4.2%"/><text x="254.0" y="170" class="tick" text-anchor="middle">Mar→Apr</text><path d="M310.1,89.5 V62.5 Q310.1,58.5 314.1,58.5 H333.0 Q337.0,58.5 337.0,62.5 V89.5 Z" class="muted mark" data-tip="Apr→May · Reported (monthly total): +4.8%"/><path d="M339.0,89.5 V81.8 Q339.0,77.8 343.0,77.8 H361.9 Q365.9,77.8 365.9,81.8 V89.5 Z" class="s1 mark" data-tip="Apr→May · Actual (per day): +1.8%"/><text x="338.0" y="170" class="tick" text-anchor="middle">Apr→May</text><path d="M394.1,89.5 V114.5 Q394.1,118.5 398.1,118.5 H417.0 Q421.0,118.5 421.0,114.5 V89.5 Z" class="muted mark" data-tip="May→Jun · Reported (monthly total): -4.5%"/><path d="M423.0,89.5 V95.1 Q423.0,99.1 427.0,99.1 H445.9 Q449.9,99.1 449.9,95.1 V89.5 Z" class="s1 mark" data-tip="May→Jun · Actual (per day): -1.5%"/><text x="422.0" y="170" class="tick" text-anchor="middle">May→Jun</text><path d="M478.1,89.5 V51.5 Q478.1,47.5 482.1,47.5 H501.0 Q505.0,47.5 505.0,51.5 V89.5 Z" class="muted mark" data-tip="Jun→Jul · Reported (monthly total): +6.5%"/><path d="M507.0,89.5 V72.8 Q507.0,68.8 511.0,68.8 H529.9 Q533.9,68.8 533.9,72.8 V89.5 Z" class="s1 mark" data-tip="Jun→Jul · Actual (per day): +3.2%"/><text x="506.0" y="170" class="tick" text-anchor="middle">Jun→Jul</text></svg>
+    <details><summary>View data</summary><table><thead><tr><th>Month</th><th>Days</th><th>Reported ₹ Cr</th><th>Reported MoM</th><th>Actual ₹ lakh/day</th><th>Actual MoM (per day)</th></tr></thead><tbody><tr><td>Jan</td><td>31</td><td>19.11</td><td>—</td><td>60.4</td><td>—</td></tr><tr><td>Feb</td><td>28</td><td>17.41</td><td>-8.9%</td><td>60.8</td><td>+0.6%</td></tr><tr><td>Mar</td><td>31</td><td>19.32</td><td>+11.0%</td><td>60.9</td><td>+0.3%</td></tr><tr><td>Apr</td><td>30</td><td>17.84</td><td>-7.7%</td><td>58.4</td><td>-4.2%</td></tr><tr><td>May</td><td>31</td><td>18.70</td><td>+4.8%</td><td>59.4</td><td>+1.8%</td></tr><tr><td>Jun</td><td>30</td><td>17.87</td><td>-4.5%</td><td>58.5</td><td>-1.5%</td></tr><tr><td>Jul</td><td>31</td><td>19.03</td><td>+6.5%</td><td>60.4</td><td>+3.2%</td></tr></tbody></table></details>
+  </div>
+  <div class="card chart">
+    <h3>Where the ₹10 Cr should go</h3>
+    <div class="sub">Chance each option earns back ₹10 Cr within 24 months, given today's evidence</div>
+    <svg viewBox="0 0 560 176" role="img" aria-label="Probability each investment option clears break-even on 10 crore"><line x1="196.0" x2="196.0" y1="4" y2="154" class="grid"/><text x="196.0" y="168" class="tick" text-anchor="middle">0%</text><line x1="273.0" x2="273.0" y1="4" y2="154" class="grid"/><text x="273.0" y="168" class="tick" text-anchor="middle">25%</text><line x1="350.0" x2="350.0" y1="4" y2="154" class="grid"/><text x="350.0" y="168" class="tick" text-anchor="middle">50%</text><line x1="427.0" x2="427.0" y1="4" y2="154" class="grid"/><text x="427.0" y="168" class="tick" text-anchor="middle">75%</text><line x1="504.0" x2="504.0" y1="4" y2="154" class="grid"/><text x="504.0" y="168" class="tick" text-anchor="middle">100%</text><text x="188" y="18.0" class="lab strong" text-anchor="end">WhatsApp / digital engagement</text><path d="M196,6 H379.9 Q383.9,6 383.9,10 V18 Q383.9,22 379.9,22 H196 Z" class="s1 mark" data-tip="WhatsApp / digital engagement: 61% chance of paying back · needs +0.20 pp lift; evidence +0.26 pp (95% CI -0.14 to +0.65)"/><text x="389.9" y="18.0" class="val">61%</text><text x="188" y="43.0" class="lab" text-anchor="end">Better borrower targeting</text><path d="M196,31 H336.8 Q340.8,31 340.8,35 V43 Q340.8,47 336.8,47 H196 Z" class="muted mark" data-tip="Better borrower targeting: 47% chance of paying back · needs +0.18 pp lift; evidence +0.17 pp (95% CI -0.13 to +0.46)"/><text x="346.8" y="43.0" class="val">47%</text><text x="188" y="68.0" class="lab" text-anchor="end">Better telephony infrastructure</text><rect x="196" y="56" width="308" height="16" fill="transparent" class="mark" data-tip="Better telephony infrastructure: 0% chance of paying back · needs +22.31 pp lift; evidence +0.24 pp (95% CI -0.23 to +0.70)"/><text x="202.0" y="68.0" class="val">0%</text><text x="188" y="93.0" class="lab" text-anchor="end">More collection agents</text><rect x="196" y="81" width="308" height="16" fill="transparent" class="mark" data-tip="More collection agents: 0% chance of paying back · needs +0.34 pp lift; evidence -0.05 pp (95% CI -0.29 to +0.19)"/><text x="202.0" y="93.0" class="val">0%</text><text x="188" y="118.0" class="lab" text-anchor="end">AI voice automation</text><rect x="196" y="106" width="308" height="16" fill="transparent" class="mark" data-tip="AI voice automation: 0% chance of paying back · needs +0.27 pp lift; evidence -0.05 pp (95% CI -0.29 to +0.19)"/><text x="202.0" y="118.0" class="val">0%</text><text x="188" y="143.0" class="lab" text-anchor="end">Field operations</text><rect x="196" y="131" width="308" height="16" fill="transparent" class="mark" data-tip="Field operations: 0% chance of paying back · needs +0.38 pp lift; evidence -0.14 pp (95% CI -0.51 to +0.22)"/><text x="202.0" y="143.0" class="val">0%</text></svg>
+    <details><summary>View data</summary><table><thead><tr><th>Option</th><th>Lift needed (pp)</th><th>Evidence (pp)</th><th>95% CI</th><th>Chance of paying back</th></tr></thead><tbody><tr><td>WhatsApp / digital engagement</td><td>+0.20</td><td>+0.26</td><td>-0.14 to +0.65</td><td>61%</td></tr><tr><td>Better borrower targeting</td><td>+0.18</td><td>+0.17</td><td>-0.13 to +0.46</td><td>47%</td></tr><tr><td>Better telephony infrastructure</td><td>+22.31</td><td>+0.24</td><td>-0.23 to +0.70</td><td>0%</td></tr><tr><td>More collection agents</td><td>+0.34</td><td>-0.05</td><td>-0.29 to +0.19</td><td>0%</td></tr><tr><td>AI voice automation</td><td>+0.27</td><td>-0.05</td><td>-0.29 to +0.19</td><td>0%</td></tr><tr><td>Field operations</td><td>+0.38</td><td>-0.14</td><td>-0.51 to +0.22</td><td>0%</td></tr></tbody></table></details>
+  </div>
+</div>
+
+<div class="fixes">
+  <div class="card head">Fix before trusting<br>these numbers</div>
+  <div class="card"><b>PTP "kept" status</b> is typed by agents, not taken from payments: 95% of "kept" promises never paid. Make it system-computed.</div>
+  <div class="card"><b>Agent IDs are shared</b>: 1,000 IDs, 643 codes, 10 names; 194 IDs logged in twice at once. Agent productivity can't be measured.</div>
+  <div class="card"><b>Payments aren't linked to contacts</b>, so no channel can be credited with cash. Add campaign ID / reference to every payment.</div>
+</div>
+
+<footer>Sources: golden dataset built by <code>pipeline/run_pipeline.py</code>; statistics in <code>notebooks/01_collections_analysis.ipynb</code>; numbers from <code>output/analysis/decision_summary.json</code>.
+Duplicate payments inflate reported cash by ₹2.59 Cr (1.9%), already removed. Cost assumptions are external Indian benchmarks (no cost data in the extract).</footer>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+const tip = document.getElementById('tip');
+document.querySelectorAll('.mark').forEach(el => {
+  el.addEventListener('mousemove', e => { tip.textContent = el.dataset.tip; tip.style.opacity = 1;
+    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8); tip.style.left = x + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+  el.addEventListener('mouseleave', () => tip.style.opacity = 0);
+});
+</script>
+</body></html>

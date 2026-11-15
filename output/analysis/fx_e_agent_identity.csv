@@ -1,0 +1,10 @@
+metric,value
+Distinct agent_id,1000.0
+Distinct employee_code,1099.0
+Distinct agent_name,10.0
+Avg employee codes per agent_id,29.6
+Avg agent_ids per employee code,26.9
+Agent_ids with simultaneous sessions,194.0
+Overlapping session pairs,225.0
+Devices used by more than one agent_id,1498.0
+Calls with no agent after dedup,1759.0

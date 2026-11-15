@@ -1,0 +1,106 @@
+# Metric definitions: the single source of truth for every KPI shown to leadership.
+# Each metric is versioned. A definition change bumps `version`, is announced on the
+# dashboard, and the history is restated (see docs/production_design.md §7 Backfills).
+# Implemented in sql/06_metrics.sql (table mt_monthly_metrics) unless noted.
+
+conventions:
+  clock: IST (Asia/Kolkata); every event timestamp converted in 01_staging
+  population: fixed panel of accounts allocated before the period (rule G-1); accounts never leave the denominator
+  period: calendar month, full months only (partial months flagged, never compared)
+  comparisons: month-on-month comparisons use per-day or per-30-day values; never raw monthly totals
+
+metrics:
+  - name: recovered_cash
+    version: 2
+    owner: collections-finance
+    grain: day, month
+    definition: Sum of SUCCESS payments, one row per payment_id
+    numerator: sum(fct_payment.amount) where is_recovered
+    filters: [payment_status = SUCCESS, deduplicated on payment_id (R-P1)]
+    display: "₹ lakh per day; ₹ Cr per month shown only alongside days in month"
+    replaced: "v1 summed raw SUCCESS rows including duplicates"
+
+  - name: recovery_rate
+    version: 2
+    owner: collections-finance
+    grain: month
+    definition: Recovered cash per 30 days as a share of the fixed panel's outstanding balance
+    numerator: recovered_cash in month / days_in_month * 30
+    denominator: sum(dim_account.outstanding_amount) over the fixed panel
+    sql: mt_monthly_metrics.recovery_rate_ours_per30d
+    replaced: "v1 used a live-book denominator built from status history (inflated +53% Jan→Jul)"
+
+  - name: recovery_per_account
+    version: 2
+    owner: collections-ops
+    grain: month
+    definition: Recovered cash per panel account per 30 days
+    numerator: recovered_cash per 30 days
+    denominator: count of panel accounts (paying or not)
+    sql: mt_monthly_metrics.recovery_per_account_ours_per30d
+    replaced: "v1 divided by paying accounts only (survivorship)"
+
+  - name: contact_rate
+    version: 2
+    owner: collections-ops
+    grain: month
+    definition: Share of dialled accounts with at least one connected (ANSWERED) call
+    numerator: accounts with n_connected > 0
+    denominator: accounts with n_calls > 0
+    sql: mt_monthly_metrics.contact_rate_ours
+
+  - name: rpc_rate
+    version: 2
+    owner: collections-ops
+    grain: month
+    definition: Share of dialled accounts with a connected call AND a right-party disposition
+    numerator: accounts with n_connected > 0 and n_rpc > 0
+    denominator: accounts with n_calls > 0
+    sql: mt_monthly_metrics.rpc_rate_ours
+    replaced: "v1 = non-NO_CONTACT dispositions / dispositions (≈77%, dispositions logged on unanswered calls)"
+
+  - name: ptp_rate
+    version: 2
+    owner: collections-ops
+    grain: month
+    definition: Share of accounts reached on any channel that made at least one promise
+    numerator: reached accounts with n_ptp > 0
+    denominator: accounts with a connected call, WhatsApp reply or contacted field visit
+    sql: mt_monthly_metrics.ptp_rate_ours
+    replaced: "v1 counted only code 'PTP', missing 'PROMISE_TO_PAY'"
+
+  - name: ptp_kept_rate
+    version: 2
+    owner: collections-ops
+    grain: month of promise
+    definition: Share of due promises followed by a SUCCESS payment between promise and promised_date + 3 days
+    numerator: due promises with is_kept_verified
+    denominator: promises whose grace window closed before the data cut-off
+    sql: mt_monthly_metrics.ptp_kept_ours
+    replaced: "v1 = agent-entered KEPT / (KEPT + BROKEN) ≈ 50%; verified ≈ 4.5%"
+
+  - name: recovery_per_agent_hour
+    version: 2
+    owner: workforce
+    grain: month
+    definition: Recovered cash per de-overlapped logged agent hour
+    numerator: recovered_cash
+    denominator: merged session hours (overlapping sessions under one agent_id counted once)
+    sql: mt_monthly_metrics.recovery_per_agent_hour_ours
+    caveat: "Hypothesis-grade until one person = one agent_id (source fix #2)"
+
+  - name: cost_per_rupee_recovered
+    version: 1
+    owner: collections-finance
+    grain: month, channel
+    definition: Incremental channel cost / incremental recovered cash vs a randomised holdout
+    status: NOT COMPUTABLE: no cost feed in the extract; requires channel cost data + holdout
+    replaced: "naive total cost / total cash credits spend with cash that arrives anyway"
+
+  - name: channel_lift
+    version: 1
+    owner: analytics
+    grain: experiment readout
+    definition: Difference in monthly payment rate, treatment minus holdout, from the randomised assignment table
+    status: "Observational proxy today (regression-adjusted, notebook §6.9); causal once the Phase-1 test runs"
+    replaced: "last-touch attributed ₹ / touches (credit equals message volume)"

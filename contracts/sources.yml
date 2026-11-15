@@ -1,0 +1,849 @@
+# Source data contracts. Generated once from the 2026-08-08 extract, then owned by hand.
+version: 1
+owner_default: collections-data-eng
+tables:
+  accounts:
+    primary_key:
+    - account_id
+    event_time: opened_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: true
+      loan_type:
+        type: string
+        nullable: false
+        allowed_values:
+        - AUTO
+        - BNPL
+        - CONSUMER
+        - CREDIT_CARD
+        - PERSONAL
+      principal_amount:
+        type: number
+        nullable: false
+      outstanding_amount:
+        type: number
+        nullable: false
+      dpd:
+        type: number
+        nullable: false
+      risk_segment:
+        type: string
+        nullable: false
+        allowed_values:
+        - HIGH
+        - LOW
+        - MEDIUM
+        - NPA
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - ACTIVE
+        - CLOSED
+        - PAID
+        - WRITEOFF
+      opened_at:
+        type: timestamp
+        nullable: false
+      timezone:
+        type: string
+        nullable: false
+        allowed_values:
+        - ASIA/DUBAI
+        - ASIA/KOLKATA
+        - UTC
+      schema_version:
+        type: string
+        nullable: false
+        allowed_values:
+        - V1
+        - V2
+        - V3
+  borrowers:
+    primary_key:
+    - borrower_id
+    - updated_at
+    event_time: updated_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      borrower_id:
+        type: string
+        nullable: false
+      name:
+        type: string
+        nullable: false
+        allowed_values:
+        - AARAV SHARMA
+        - AMIT KUMAR
+        - ANANYA RAO
+        - NEHA SINGH
+        - POOJA NAIR
+        - PRIYA MEHTA
+        - RAHUL VERMA
+        - ROHAN PATEL
+        - SNEHA DAS
+        - VIKRAM SHAH
+      phone:
+        type: string
+        nullable: true
+      email:
+        type: string
+        nullable: true
+      city:
+        type: string
+        nullable: false
+        allowed_values:
+        - BENGALURU
+        - BHUBANESWAR
+        - CHENNAI
+        - DELHI
+        - GURUGRAM
+        - HYDERABAD
+        - JAIPUR
+        - KOLKATA
+        - MUMBAI
+        - PUNE
+      created_at:
+        type: timestamp
+        nullable: false
+      updated_at:
+        type: timestamp
+        nullable: false
+      state:
+        type: string
+        nullable: false
+        allowed_values:
+        - DELHI
+        - HARYANA
+        - KARNATAKA
+        - MAHARASHTRA
+        - ODISHA
+        - RAJASTHAN
+        - TAMIL NADU
+        - TELANGANA
+        - WEST BENGAL
+  agents:
+    primary_key:
+    - agent_id
+    - updated_at
+    event_time: updated_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      agent_id:
+        type: string
+        nullable: false
+      employee_code:
+        type: string
+        nullable: false
+      agent_name:
+        type: string
+        nullable: false
+        allowed_values:
+        - AARAV SHARMA
+        - AMIT KUMAR
+        - ANANYA RAO
+        - NEHA SINGH
+        - POOJA NAIR
+        - PRIYA MEHTA
+        - RAHUL VERMA
+        - ROHAN PATEL
+        - SNEHA DAS
+        - VIKRAM SHAH
+      vendor_id:
+        type: string
+        nullable: false
+      team:
+        type: string
+        nullable: false
+        allowed_values:
+        - DIGITAL
+        - FIELD
+        - T1
+        - T2
+        - T3
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - ACTIVE
+        - INACTIVE
+        - SUSPENDED
+      joined_at:
+        type: timestamp
+        nullable: false
+      updated_at:
+        type: timestamp
+        nullable: false
+  agent_sessions:
+    primary_key:
+    - session_id
+    event_time: login_at
+    timezone_rule: login/logout are wall-clock in column `timezone`
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      session_id:
+        type: string
+        nullable: false
+      agent_id:
+        type: string
+        nullable: false
+      login_at:
+        type: timestamp
+        nullable: false
+      channel:
+        type: string
+        nullable: false
+        allowed_values:
+        - FIELD
+        - SMS
+        - VOICE
+        - WHATSAPP
+      device_id:
+        type: string
+        nullable: false
+      timezone:
+        type: string
+        nullable: false
+        allowed_values:
+        - ASIA/KOLKATA
+        - UTC
+      logout_at:
+        type: timestamp
+        nullable: false
+  campaigns:
+    primary_key:
+    - campaign_id
+    event_time: start_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      campaign_id:
+        type: string
+        nullable: false
+      campaign_name:
+        type: string
+        nullable: false
+        allowed_values:
+        - 30DPD_W1
+        - 60DPD_INTENT
+        - BOUNCE
+        - DIGITAL_FOLLOWUP
+        - NPA_RECOVERY
+      channel:
+        type: string
+        nullable: false
+        allowed_values:
+        - FIELD
+        - MIXED
+        - SMS
+        - VOICE
+        - WHATSAPP
+      strategy_version:
+        type: string
+        nullable: false
+        allowed_values:
+        - LEGACY
+        - V1
+        - V2
+        - V3
+      start_at:
+        type: timestamp
+        nullable: false
+      target_definition:
+        type: string
+        nullable: false
+        allowed_values:
+        - DPD>=30
+        - DPD>=60
+        - HIGH_RISK
+        - NPA
+        - PROMISE_BROKEN
+      end_at:
+        type: timestamp
+        nullable: false
+  daily_targeting:
+    primary_key:
+    - target_id
+    event_time: target_date
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      target_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      campaign_id:
+        type: string
+        nullable: false
+      target_date:
+        type: timestamp
+        nullable: false
+      priority:
+        type: number
+        nullable: false
+      recommended_channel:
+        type: string
+        nullable: false
+        allowed_values:
+        - FIELD
+        - SMS
+        - VOICE
+        - WHATSAPP
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - CONTACTED
+        - EXPIRED
+        - QUEUED
+        - SKIPPED
+  calls:
+    primary_key:
+    - call_id
+    event_time: event_at
+    timezone_rule: event_at is wall-clock in column `timezone`
+    expected_rows_per_day: 415
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      call_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      agent_id:
+        type: string
+        nullable: true
+      campaign_id:
+        type: string
+        nullable: false
+      direction:
+        type: string
+        nullable: false
+        allowed_values:
+        - INBOUND
+        - OUTBOUND
+      vendor_id:
+        type: string
+        nullable: false
+      call_status:
+        type: string
+        nullable: false
+        allowed_values:
+        - ANSWERED
+        - BUSY
+        - FAILED
+        - NO_ANSWER
+        - VOICEMAIL
+      duration_sec:
+        type: number
+        nullable: false
+      timezone:
+        type: string
+        nullable: false
+        allowed_values:
+        - ASIA/DUBAI
+        - ASIA/KOLKATA
+        - UTC
+  call_attempts:
+    primary_key:
+    - attempt_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 545
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      attempt_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      call_id:
+        type: string
+        nullable: false
+      agent_id:
+        type: string
+        nullable: false
+      attempt_no:
+        type: number
+        nullable: false
+      vendor_id:
+        type: string
+        nullable: true
+      attempt_status:
+        type: string
+        nullable: false
+        allowed_values:
+        - BUSY
+        - CONNECTED
+        - FAILED
+        - NO_ANSWER
+        - RINGING
+  call_dispositions:
+    primary_key:
+    - disposition_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 159
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      disposition_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      call_id:
+        type: string
+        nullable: false
+      agent_id:
+        type: string
+        nullable: false
+      disposition_code:
+        type: string
+        nullable: false
+        allowed_values:
+        - CALLBACK
+        - DISPUTE
+        - NO_CONTACT
+        - PAID
+        - PROMISE_TO_PAY
+        - PTP
+        - PTP_BROKEN
+        - REFUSED
+        - WRONG_NUMBER
+      disposition_version:
+        type: string
+        nullable: false
+        allowed_values:
+        - LEGACY
+        - V1
+        - V2
+  whatsapp_events:
+    primary_key:
+    - whatsapp_event_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 275
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      whatsapp_event_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      message_id:
+        type: string
+        nullable: false
+      event_type:
+        type: string
+        nullable: false
+        allowed_values:
+        - DELIVERED
+        - FAILED
+        - PAYMENT_CLICK
+        - READ
+        - REPLIED
+        - SENT
+      template_code:
+        type: string
+        nullable: false
+        allowed_values:
+        - FIELD_VISIT
+        - LEGAL_NOTICE
+        - PAYMENT_LINK
+        - PTP_01
+        - REMINDER_01
+      provider_id:
+        type: string
+        nullable: false
+  sms_events:
+    primary_key:
+    - sms_event_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 205
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      sms_event_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      message_id:
+        type: string
+        nullable: false
+      event_type:
+        type: string
+        nullable: false
+        allowed_values:
+        - CLICKED
+        - DELIVERED
+        - FAILED
+        - SENT
+      template_code:
+        type: string
+        nullable: false
+        allowed_values:
+        - DUE_REMINDER
+        - NOTICE
+        - PAYMENT_LINK
+        - PTP_REMINDER
+      provider_id:
+        type: string
+        nullable: false
+  field_visits:
+    primary_key:
+    - visit_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 114
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      visit_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      agent_id:
+        type: string
+        nullable: false
+      visit_type:
+        type: string
+        nullable: false
+        allowed_values:
+        - AFTER_HOURS
+        - FIRST_VISIT
+        - FOLLOWUP
+        - NOTICE
+      outcome:
+        type: string
+        nullable: false
+        allowed_values:
+        - CONTACTED
+        - NOT_AVAILABLE
+        - PAID
+        - PTP
+        - REFUSED
+        - WRONG_ADDRESS
+      latitude:
+        type: number
+        nullable: false
+      longitude:
+        type: number
+        nullable: false
+      scheduled_at:
+        type: timestamp
+        nullable: true
+  promises_to_pay:
+    primary_key:
+    - ptp_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 82
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      ptp_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      agent_id:
+        type: string
+        nullable: false
+      promised_amount:
+        type: number
+        nullable: false
+      promised_date:
+        type: timestamp
+        nullable: false
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - BROKEN
+        - CANCELLED
+        - KEPT
+        - OPEN
+      source:
+        type: string
+        nullable: false
+        allowed_values:
+        - CALL
+        - FIELD
+        - SMS
+        - WHATSAPP
+  payments:
+    primary_key:
+    - payment_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 116
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      payment_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      payment_reference:
+        type: string
+        nullable: true
+      amount:
+        type: number
+        nullable: false
+      payment_status:
+        type: string
+        nullable: false
+        allowed_values:
+        - FAILED
+        - PENDING
+        - REVERSED
+        - SUCCESS
+      payment_method:
+        type: string
+        nullable: false
+        allowed_values:
+        - CARD
+        - CASH
+        - NACH
+        - NETBANKING
+        - UPI
+      provider_id:
+        type: string
+        nullable: false
+  vendor_telephony:
+    primary_key:
+    - vendor_id
+    event_time: null
+    timezone_rule: IST unless stated
+    expected_rows_per_day: null
+    freshness_sla_hours: 168
+    late_arrival_tolerance_days: null
+    columns:
+      vendor_id:
+        type: string
+        nullable: false
+      vendor_name:
+        type: string
+        nullable: false
+        allowed_values:
+        - AIRTEL
+        - EXOTEL
+        - KNOWLARITY
+        - TATATELE
+        - TWILIO
+      vendor_account_id:
+        type: string
+        nullable: false
+      timezone:
+        type: string
+        nullable: false
+        allowed_values:
+        - ASIA/KOLKATA
+        - UTC
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - ACTIVE
+        - INACTIVE
+      schema_version:
+        type: string
+        nullable: false
+        allowed_values:
+        - V1
+        - V2
+        - V3
+  complaints:
+    primary_key:
+    - complaint_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 36
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      complaint_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      complaint_type:
+        type: string
+        nullable: false
+        allowed_values:
+        - AGENT_BEHAVIOUR
+        - DISPUTE
+        - DND
+        - HARASSMENT
+        - PAYMENT
+        - PRIVACY
+        - WRONG_CONTACT
+      severity:
+        type: string
+        nullable: false
+        allowed_values:
+        - CRITICAL
+        - HIGH
+        - LOW
+        - MEDIUM
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - CLOSED
+        - INVESTIGATING
+        - OPEN
+        - RESOLVED
+      source:
+        type: string
+        nullable: false
+        allowed_values:
+        - CALL
+        - EMAIL
+        - FIELD
+        - SMS
+        - WHATSAPP
+      resolution_at:
+        type: timestamp
+        nullable: false
+  account_status_history:
+    primary_key:
+    - history_id
+    event_time: event_at
+    timezone_rule: IST unless stated
+    expected_rows_per_day: 273
+    freshness_sla_hours: 24
+    late_arrival_tolerance_days: 7
+    columns:
+      history_id:
+        type: string
+        nullable: false
+      account_id:
+        type: string
+        nullable: false
+      borrower_id:
+        type: string
+        nullable: false
+      event_at:
+        type: timestamp
+        nullable: false
+      status:
+        type: string
+        nullable: false
+        allowed_values:
+        - ACTIVE
+        - CLOSED
+        - DELINQUENT
+        - NPA
+        - PAID
+        - PTP
+        - WRITEOFF
+      changed_by:
+        type: string
+        nullable: false
+      source:
+        type: string
+        nullable: false
+        allowed_values:
+        - BATCH
+        - CALL
+        - CORE
+        - FIELD
+        - PAYMENT
+      recorded_at:
+        type: timestamp
+        nullable: false
