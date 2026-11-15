@@ -17,9 +17,15 @@ Analysis of a collections platform extract (17 tables, 30,000 accounts, 1 Jan �
 | 2 | **Analysis notebook**: reasoning from problem formulation (MDP → MRP → hypotheses → BLUEPRNT design) to recommendation | [`notebooks/01_collections_analysis.ipynb`](notebooks/01_collections_analysis.ipynb) · [HTML render](notebooks/01_collections_analysis.html) |
 | 3 | **Golden dataset + reproducible pipeline** | [`output/golden/*.parquet`](output/golden) · [`pipeline/run_pipeline.py`](pipeline/run_pipeline.py) |
 | 4 | **Data quality report**: issues, detection, treatment, business impact | [`reports/data_quality_report.md`](reports/data_quality_report.md) |
-| 5 | **Executive dashboard**: one screen | [`dashboard/index.html`](dashboard/index.html) (open in a browser) · ![preview](dashboard/screenshot_light.png) |
+| 5 | **Executive dashboard**: one screen | **Tableau:** [`dashboard/tableau/collections_recovery_dashboard.twbx`](dashboard/tableau/collections_recovery_dashboard.twbx) (packaged workbook, data embedded; opens in Tableau Desktop / Reader) · **HTML:** [`dashboard/index.html`](dashboard/index.html) (open in any browser, no install) |
 | 6 | **Executive memo** (2 pages) | [`reports/executive_memo.pdf`](reports/executive_memo.pdf) · [Markdown](reports/executive_memo.md) |
 | 7 | **Architecture diagram + production design** | [`docs/architecture.png`](docs/architecture.png) · [`docs/production_design.md`](docs/production_design.md) |
+
+### Dashboard preview (Tableau)
+
+![Tableau executive dashboard](dashboard/tableau/tableau_dashboard.png)
+
+Both dashboards read the same numbers from `output/analysis/decision_summary.json`, so they can't disagree.
 
 ## How to run
 
@@ -52,7 +58,7 @@ pipeline/               runner, data-contract generator + validator
 contracts/sources.yml   data contracts for all 17 feeds
 metrics/metrics.yml     versioned KPI definitions
 notebooks/              notebook source (build_notebook.py), executed notebook, HTML
-dashboard/              dashboard builder + self-contained index.html
+dashboard/              HTML dashboard builder + index.html; tableau/ = packaged workbook (.twbx), its data CSVs + builder
 reports/                data quality report, executive memo (+ builder)
 docs/                   production design, architecture diagram (dot / svg / png)
 output/golden/          golden dataset (Parquet)

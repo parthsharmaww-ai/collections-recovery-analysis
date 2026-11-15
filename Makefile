@@ -14,8 +14,9 @@ notebook:            ## regenerate + execute the analysis notebook (also writes 
 	    --ExecutePreprocessor.timeout=900 01_collections_analysis.ipynb
 	cd notebooks && jupyter nbconvert --to html 01_collections_analysis.ipynb
 
-dashboard:           ## one-screen executive dashboard
+dashboard:           ## one-screen executive dashboard (HTML) + refreshed data for the Tableau workbook
 	python dashboard/build_dashboard.py
+	python dashboard/tableau/build_tableau_data.py
 
 memo:                ## 2-page executive memo (Markdown + PDF; PDF needs headless Chrome)
 	python reports/build_memo.py
